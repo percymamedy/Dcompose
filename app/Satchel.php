@@ -21,4 +21,24 @@ class Satchel
     {
         $this->disk = Storage::disk('local');
     }
+
+    /**
+     * Checks Satchel contains Laradock.
+     *
+     * @return bool
+     */
+    public function containsLaradock(): bool
+    {
+        return $this->disk->exists('laradock.zip');
+    }
+
+    /**
+     * Checks Satchel does not contains Laradock.
+     *
+     * @return bool
+     */
+    public function doesNotContainLaradock(): bool
+    {
+        return !$this->containsLaradock();
+    }
 }
