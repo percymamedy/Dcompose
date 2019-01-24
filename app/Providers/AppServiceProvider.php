@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Satchel;
 use App\Laradock;
 use GuzzleHttp\Client;
+use Illuminate\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -26,10 +28,11 @@ class AppServiceProvider extends ServiceProvider
     public function register()
     {
         // Bind Laradock.
-        $this->app->singleton(Laradock::class, function ($app) {
+        $this->app->singleton(Laradock::class, function (Application $app) {
             return new Laradock(
                 new Client(['base_uri' => 'https://api.github.com/']),
-                config('filesystems.disks.local.root') . DIRECTORY_SEPARATOR . 'laradock.zip'
+                config('filesystems.disks.local.root') . DIRECTORY_SEPARATOR . 'laradock.zip',
+                $app->make(Satchel::class)
             );
         });
     }

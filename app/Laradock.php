@@ -3,6 +3,7 @@
 namespace App;
 
 use GuzzleHttp\Client;
+use Illuminate\Support\Collection;
 
 class Laradock
 {
@@ -21,15 +22,24 @@ class Laradock
     protected $laradockZip;
 
     /**
+     * Satchel instance.
+     *
+     * @var Satchel
+     */
+    protected $satchel;
+
+    /**
      * Laradock constructor.
      *
-     * @param Client $gitHubClient
-     * @param string $laradockZip
+     * @param Client  $gitHubClient
+     * @param string  $laradockZip
+     * @param Satchel $satchel
      */
-    public function __construct(Client $gitHubClient, string $laradockZip)
+    public function __construct(Client $gitHubClient, string $laradockZip, Satchel $satchel)
     {
         $this->laradockZip = $laradockZip;
         $this->gitHubClient = $gitHubClient;
+        $this->satchel = $satchel;
     }
 
     /**
@@ -43,6 +53,16 @@ class Laradock
     }
 
     /**
+     * Get available services.
+     *
+     * @return Collection
+     */
+    public function availableServices(): Collection
+    {
+        return $this->satchel->laradockData();
+    }
+
+    /**
      * Unzip Laradock zip file.
      *
      * @return Laradock
@@ -52,8 +72,16 @@ class Laradock
         $zip = new \ZipArchive();
         $resource = $zip->open($this->laradockZip);
 
+        // Check if we were able to get
+        // resource.
         if ($resource === true) {
+            // Extract the archive.
             $zip->extractTo(home_dir() . DIRECTORY_SEPARATOR . 'laradock');
+            // Rename extracted folder so we may access it later.
+            $this->satchel->move(
+                array_first($this->satchel->directories('laradock')),
+                'laradock/data'
+            );
             return $this;
         }
 

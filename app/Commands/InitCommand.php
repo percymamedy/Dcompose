@@ -37,9 +37,17 @@ class InitCommand extends Command
     protected $laradock;
 
     /**
+     * Choosen services for initialization.
+     *
+     * @var array
+     */
+    protected $choosenServices = [];
+
+    /**
      * InitCommand constructor.
      *
-     * @param Satchel $satchel
+     * @param Satchel  $satchel
+     * @param Laradock $laradock
      */
     public function __construct(Satchel $satchel, Laradock $laradock)
     {
@@ -61,6 +69,43 @@ class InitCommand extends Command
         if ($this->satchel->doesNotContainLaradock()) {
             $this->info('Fetching laradock from dist...');
             $this->laradock->grabAndPutInSatchel();
+        }
+
+        // Ask User to select services.
+        $this->askForServices();
+
+        // Build docker-compose.yml file.
+
+        // Add directories.
+    }
+
+    /**
+     * Ask User for services.
+     *
+     * @return void
+     */
+    protected function askForServices()
+    {
+        // Get available services.
+        $availableServices = $this->laradock->availableServices();
+
+        while (true) {
+            // Ask User for services.
+            $service = $this->askWithCompletion('Enter a service name or press enter to quit', $availableServices->all());
+
+            // User completed his selection of services.
+            if (is_null($service)) {
+                break;
+            }
+
+            // Validate Service.
+            if ($availableServices->contains($service)) {
+                $this->choosenServices[] = $service;
+                continue;
+            }
+
+            // Show error.
+            $this->error('The service "' . $service . '" is not a valid laradock service. Enter another service');
         }
     }
 }
