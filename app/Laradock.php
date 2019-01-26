@@ -3,6 +3,7 @@
 namespace App;
 
 use GuzzleHttp\Client;
+use Symfony\Component\Yaml\Yaml;
 use Illuminate\Support\Collection;
 
 class Laradock
@@ -60,6 +61,18 @@ class Laradock
     public function availableServices(): Collection
     {
         return $this->satchel->laradockData();
+    }
+
+    /**
+     * Get the contents of the docker-compose.yml.
+     *
+     * @return mixed
+     *
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     */
+    public function dockerComposeData()
+    {
+        return Yaml::parse($this->satchel->get('laradock/data/docker-compose.yml'));
     }
 
     /**

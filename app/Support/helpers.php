@@ -26,3 +26,20 @@ if (!function_exists('home_dir')) {
         return empty($home) ? null : $home . DIRECTORY_SEPARATOR . '.dcompose';
     }
 }
+
+if (!function_exists('ddd')) {
+    /**
+     * Advanced dumped and die.
+     *
+     * @param mixed $variable
+     * @param null  $depth
+     */
+    function ddd($variable, $depth = null)
+    {
+        \Kint::$max_depth = $depth;
+
+        Kint::dump($variable);
+
+        exit;
+    }
+}

@@ -33,5 +33,10 @@ return [
             'driver' => 'local',
             'root'   => home_dir(),
         ],
+
+        'work_dir' => [
+            'driver' => 'local',
+            'root'   => getcwd(),
+        ],
     ],
 ];

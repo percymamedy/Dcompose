@@ -3,6 +3,7 @@
 namespace App\Commands;
 
 use App\Satchel;
+use App\Compose;
 use App\Laradock;
 use LaravelZero\Framework\Commands\Command;
 
@@ -37,6 +38,13 @@ class InitCommand extends Command
     protected $laradock;
 
     /**
+     * The Compose instance.
+     *
+     * @var Compose
+     */
+    protected $compose;
+
+    /**
      * Choosen services for initialization.
      *
      * @var array
@@ -48,12 +56,14 @@ class InitCommand extends Command
      *
      * @param Satchel  $satchel
      * @param Laradock $laradock
+     * @param Compose  $compose
      */
-    public function __construct(Satchel $satchel, Laradock $laradock)
+    public function __construct(Satchel $satchel, Laradock $laradock, Compose $compose)
     {
         parent::__construct();
         $this->satchel = $satchel;
         $this->laradock = $laradock;
+        $this->compose = $compose;
     }
 
     /**
@@ -74,9 +84,23 @@ class InitCommand extends Command
         // Ask User to select services.
         $this->askForServices();
 
+        // Cancel action if the User does not want to continue with erasing the docker-compose.yml file.
+        if ($this->compose->hasDockerComposeFile() && !$this->confirm('The docker-compose.yml file exist, do you wish to continue?')) {
+            $this->info('Operation aborted!');
+            return;
+        }
+
         // Build docker-compose.yml file.
+        if (!$this->compose->newUpDockerComposeFile($this->choosenServices)) {
+            $this->error('Unable to create docker-compose.yml file');
+            return;
+        }
 
         // Add directories.
+        $this->compose->addServices($this->choosenServices);
+
+        // Success message.
+        $this->info('Docker environment created run "docker-compose up -d" within the ".docker" directory');
     }
 
     /**
