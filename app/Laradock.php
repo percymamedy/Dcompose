@@ -2,6 +2,7 @@
 
 namespace App;
 
+use ZipArchive;
 use GuzzleHttp\Client;
 use Symfony\Component\Yaml\Yaml;
 use Illuminate\Support\Collection;
@@ -76,13 +77,39 @@ class Laradock
     }
 
     /**
+     * Get the contents of the .env file.
+     *
+     * @return string
+     *
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     */
+    public function envData()
+    {
+        return $this->satchel->get('laradock/data/env-example');
+    }
+
+    /**
+     * Get the full path of the service.
+     *
+     * @param string $service
+     *
+     * @return string
+     */
+    public function servicePath(string $service): string
+    {
+        return $this->satchel->path('laradock/data/' . $service);
+    }
+
+    /**
      * Unzip Laradock zip file.
      *
      * @return Laradock
+     *
+     * @throws \InvalidArgumentException
      */
     protected function unzip(): Laradock
     {
-        $zip = new \ZipArchive();
+        $zip = new ZipArchive();
         $resource = $zip->open($this->laradockZip);
 
         // Check if we were able to get

@@ -43,3 +43,29 @@ if (!function_exists('ddd')) {
         exit;
     }
 }
+
+if (!function_exists('recurse_copy')) {
+    /**
+     * Recursively copy one folder to another.
+     *
+     * @param string $src
+     * @param string $dst
+     *
+     * @return void
+     */
+    function recurse_copy($src, $dst)
+    {
+        $dir = opendir($src);
+        @mkdir($dst);
+        while (false !== ($file = readdir($dir))) {
+            if (($file != '.') && ($file != '..')) {
+                if (is_dir($src . DIRECTORY_SEPARATOR . $file)) {
+                    recurse_copy($src . DIRECTORY_SEPARATOR . $file, $dst . DIRECTORY_SEPARATOR . $file);
+                } else {
+                    copy($src . DIRECTORY_SEPARATOR . $file, $dst . DIRECTORY_SEPARATOR . $file);
+                }
+            }
+        }
+        closedir($dir);
+    }
+}

@@ -69,7 +69,7 @@ class InitCommand extends Command
     /**
      * Execute the console command.
      *
-     * @return mixed
+     * @return mixed|void
      */
     public function handle()
     {
@@ -95,6 +95,9 @@ class InitCommand extends Command
             $this->error('Unable to create docker-compose.yml file');
             return;
         }
+
+        // Create .docker folder.
+        $this->compose->touchDockerFolder();
 
         // Add directories.
         $this->compose->addServices($this->choosenServices);

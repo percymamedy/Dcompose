@@ -96,12 +96,21 @@ class DockerComposeFile
      */
     protected function changeContext(array $serviceData, string $contentFolder = './.docker/'): array
     {
+        // Change current build folder to .docker/ folder.
         if (isset($serviceData['build']['context']) && !is_array($serviceData['build']['context'])) {
             $serviceData['build']['context'] = $contentFolder . ltrim($serviceData['build']['context'], './');
         }
 
+        // Change current build folder to .docker/ folder.
         if (isset($serviceData['build']) && !is_array($serviceData['build'])) {
             $serviceData['build'] = $contentFolder . ltrim($serviceData['build'], './');
+        }
+
+        // Change volumes folder to .docker/ folder.
+        if (isset($serviceData['volumes']) && is_array($serviceData['volumes'])) {
+            foreach ($serviceData['volumes'] as $key => $volume) {
+                $serviceData['volumes'][$key] = str_replace('./', './.docker/', $serviceData['volumes'][$key]);
+            }
         }
 
         return $serviceData;

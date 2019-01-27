@@ -6,6 +6,7 @@ use App\Satchel;
 use App\Compose;
 use App\Laradock;
 use GuzzleHttp\Client;
+use App\Support\Paths\Repository;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\ServiceProvider;
@@ -43,7 +44,7 @@ class AppServiceProvider extends ServiceProvider
             return new Compose(
                 Storage::disk('work_dir'),
                 $app->make(Laradock::class),
-                'docker-compose.yml'
+                $app->make(Repository::class)
             );
         });
     }
