@@ -6,6 +6,7 @@ use ZipArchive;
 use GuzzleHttp\Client;
 use Symfony\Component\Yaml\Yaml;
 use Illuminate\Support\Collection;
+use App\Support\Artifacts\EnvFile;
 
 class Laradock
 {
@@ -79,13 +80,17 @@ class Laradock
     /**
      * Get the contents of the .env file.
      *
-     * @return string
-     *
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     * @return EnvFile|null
      */
     public function envData()
     {
-        return $this->satchel->get('laradock/data/env-example');
+        try {
+            return EnvFile::load(
+                $this->satchel->get('laradock/data/env-example')
+            );
+        } catch (\Illuminate\Contracts\Filesystem\FileNotFoundException $e) {
+            return null;
+        }
     }
 
     /**

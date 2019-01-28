@@ -109,34 +109,59 @@ class Compose
     /**
      * Creates .docker folder and add in the .env file.
      *
+     * @param string $projectName
+     *
      * @return bool
      */
-    public function touchDockerFolder(): bool
+    public function touchDockerFolder(string $projectName = null): bool
     {
-        try {
-            // Checks if .docker folder exists
-            // and if not create it.
-            if (!$this->hasDockerFolder()) {
-                $this->storage->makeDirectory(
-                    $this->paths->dockerFolderPath
-                );
-            }
+        $wasSaved = false;
 
-            // Checks if .env file exists and
-            // if not create it.
-            if (!$this->hasDockerEnv()) {
-                // Get .env data.
-                $envData = $this->laradock->envData();
-                // Create env-example file.
-                $this->storage->put($this->paths->dockerEnvExamplePath, $envData);
-                // Create .env file.
-                $this->storage->put($this->paths->dockerEnvPath, $envData);
-            }
+        // Checks if .docker folder exists
+        // and if not create it.
+        if (!$this->hasDockerFolder()) {
+            $wasSaved = $this->storage->makeDirectory(
+                $this->paths->dockerFolderPath
+            );
+        }
 
-            return true;
-        } catch (\Exception $e) {
+        // Checks if .env file exists and
+        // if not create it.
+        if (!$this->hasDockerEnv()) {
+            $wasSaved = $this->touchEnvFiles($projectName);
+        }
+
+        return $wasSaved;
+    }
+
+    /**
+     * Create env-example and .env files.
+     *
+     * @param string|null $projectName
+     *
+     * @return bool
+     */
+    public function touchEnvFiles(string $projectName = null): bool
+    {
+        // Get .env file.
+        $envFile = $this->laradock->envData();
+
+        // Could not load env data.
+        if (is_null($envFile)) {
             return false;
         }
+
+        // Check if a Project name is supplied and if
+        // so change env data.
+        if (!is_null($projectName)) {
+            $envFile->setProjectName($projectName);
+        }
+
+        // Save env-example and env file.
+        $envFile->saveExample($this->storage);
+
+        // Save .env file.
+        return $envFile->save($this->storage);
     }
 
     /**

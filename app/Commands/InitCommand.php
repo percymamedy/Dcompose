@@ -81,6 +81,9 @@ class InitCommand extends Command
             $this->laradock->grabAndPutInSatchel();
         }
 
+        // Ask User for a Project name.
+        $projectName = $this->ask('Enter a name for your project');
+
         // Ask User to select services.
         $this->askForServices();
 
@@ -97,7 +100,7 @@ class InitCommand extends Command
         }
 
         // Create .docker folder.
-        $this->compose->touchDockerFolder();
+        $this->compose->touchDockerFolder($projectName);
 
         // Add directories.
         $this->compose->addServices($this->choosenServices);
