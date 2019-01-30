@@ -12,10 +12,10 @@ Fast scaffolding for a laradock project.
     - [x] Update .env parameters according to Project name.
     - [x] Create .docker folder and add services folders to it.
 - [ ] Require Command.
-    - [ ] Allow User to require an additional service.
+    - [x] Allow User to require an additional service.
     - [ ] Add Choosen service to the docker-compose.yml.
-    - [ ] Add service folder to the .docekr folder. 
-- [ ] Remove Command .
+    - [x] Add service folder to the .docker folder. 
+- [ ] Remove Command.
     - [ ] Allow User to remove service.
     - [ ] Remove the service from the docker-compose.yml
     - [ ] Remove the service folder.

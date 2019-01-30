@@ -66,6 +66,18 @@ class Laradock
     }
 
     /**
+     * Checks if service is avalable in laradock.
+     *
+     * @param string $service
+     *
+     * @return bool
+     */
+    public function has(string $service): bool
+    {
+        return $this->availableServices()->contains($service);
+    }
+
+    /**
      * Get the contents of the docker-compose.yml.
      *
      * @return mixed

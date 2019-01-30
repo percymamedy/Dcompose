@@ -95,7 +95,7 @@ class InitCommand extends Command
 
         // Build docker-compose.yml file.
         if (!$this->compose->newUpDockerComposeFile($this->choosenServices)) {
-            $this->error('Unable to create docker-compose.yml file');
+            $this->error('Unable to create docker-compose.yml file!');
             return;
         }
 
@@ -106,7 +106,7 @@ class InitCommand extends Command
         $this->compose->addServices($this->choosenServices);
 
         // Success message.
-        $this->info('Docker environment created run "docker-compose up -d" within the ".docker" directory');
+        $this->info('Docker environment created run "docker-compose up -d" within the ".docker" directory.');
     }
 
     /**

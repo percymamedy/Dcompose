@@ -38,5 +38,10 @@ return [
             'driver' => 'local',
             'root'   => getcwd(),
         ],
+
+        'docker' => [
+            'driver' => 'local',
+            'root'   => getcwd() . DIRECTORY_SEPARATOR . '.docker',
+        ],
     ],
 ];

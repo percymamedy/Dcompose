@@ -177,12 +177,24 @@ class Compose
 
         foreach ($services as $service) {
             // Copy Service folder to the .docker folder.
-            recurse_copy(
-                $this->laradock->servicePath($service) . DIRECTORY_SEPARATOR,
-                $this->storage->path($this->paths->dockerFolderPath . DIRECTORY_SEPARATOR . $service . DIRECTORY_SEPARATOR)
-            );
+            $this->addService($service);
         }
 
         return true;
+    }
+
+    /**
+     * Add a service to the .docker folder.
+     *
+     * @param string $service
+     *
+     * @return void
+     */
+    public function addService(string $service)
+    {
+        recurse_copy(
+            $this->laradock->servicePath($service) . DIRECTORY_SEPARATOR,
+            $this->storage->path($this->paths->dockerFolderPath . DIRECTORY_SEPARATOR . $service . DIRECTORY_SEPARATOR)
+        );
     }
 }
