@@ -2,7 +2,10 @@
 
 namespace App\Support\Artifacts;
 
+use App\Laradock;
 use Symfony\Component\Yaml\Yaml;
+use App\Support\Paths\Repository;
+use Illuminate\Support\Facades\Storage;
 
 class DockerComposeFile
 {
@@ -34,11 +37,13 @@ class DockerComposeFile
      *
      * @param array $repositoryData
      * @param array $choosenServices
+     * @param array $contents
      */
-    public function __construct(array $repositoryData, array $choosenServices)
+    public function __construct(array $repositoryData, array $choosenServices = [], array $contents = [])
     {
         $this->repositoryData = $repositoryData;
         $this->choosenServices = $choosenServices;
+        $this->contents = $contents;
     }
 
     /**
@@ -55,14 +60,11 @@ class DockerComposeFile
 
         // Add Volumes depending on services.
         foreach ($this->choosenServices as $service) {
-            // Check if the service should contain a volume.
-            if (array_key_exists($service, $this->repositoryData['volumes'])) {
-                $this->contents['volumes'][$service] = $this->repositoryData['volumes'][$service];
-            }
+            $this->addVolume($service);
         }
 
         // Add Docker in Docker service.
-        $this->contents['services']['docker-in-docker'] = $this->repositoryData['services']['docker-in-docker'];
+        $this->addService('docker-in-docker');
 
         return $this;
     }
@@ -75,12 +77,52 @@ class DockerComposeFile
     public function addServices(): DockerComposeFile
     {
         foreach ($this->choosenServices as $service) {
-            // Add each Service to the contents.
-            if (array_key_exists($service, $this->repositoryData['services'])) {
-                $this->contents['services'][$service] = $this->changeContext(
-                    $this->repositoryData['services'][$service]
-                );
-            }
+            $this->addService($service);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Add a service to the contents.
+     *
+     * @param string $service
+     * @param bool   $withVolume
+     *
+     * @return DockerComposeFile
+     */
+    public function addService(string $service, $withVolume = false): DockerComposeFile
+    {
+        // Checks if we need to add a volume before adding
+        // the service.
+        if ($withVolume) {
+            $this->addVolume($service);
+        }
+
+        // Checks if the repository data contains the service
+        // and if so add to the new contents.
+        if (array_key_exists($service, $this->repositoryData['services'])) {
+            $this->contents['services'][$service] = $this->changeContext(
+                $this->repositoryData['services'][$service]
+            );
+        }
+
+        return $this;
+    }
+
+    /**
+     * Add volume to a service.
+     *
+     * @param string $service
+     *
+     * @return DockerComposeFile
+     */
+    public function addVolume(string $service): DockerComposeFile
+    {
+        // Check if the service should contain a volume and if so
+        // add it.
+        if (array_key_exists($service, $this->repositoryData['volumes'])) {
+            $this->contents['volumes'][$service] = $this->repositoryData['volumes'][$service];
         }
 
         return $this;
@@ -127,7 +169,20 @@ class DockerComposeFile
     }
 
     /**
-     * Creae a new instance of DockerCompose file.
+     * Save the docker-compose file to disk.
+     *
+     * @return bool
+     */
+    public function persist(): bool
+    {
+        return Storage::disk('work_dir')->put(
+            $this->paths()->dockerComposePath,
+            $this->render()
+        );
+    }
+
+    /**
+     * Create a new instance of DockerCompose file.
      *
      * @param array $repositoryData
      * @param array $choosenServices
@@ -137,5 +192,39 @@ class DockerComposeFile
     public static function make(array $repositoryData, array $choosenServices)
     {
         return new static($repositoryData, $choosenServices);
+    }
+
+    /**
+     * Load a new DockerCompose from current docker-compose.yml file.
+     *
+     * @return DockerComposeFile
+     *
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     */
+    public static function load(): DockerComposeFile
+    {
+        // Get current docker-compose.yml contents.
+        $contents = Yaml::parse(
+            Storage::disk('work_dir')->get(resolve(Repository::class)->dockerComposePath)
+        );
+
+        // Get choosen services.
+        $choosenServices = isset($contents['services']) ? array_keys($contents['services']) : [];
+
+        return new static(
+            resolve(Laradock::class)->dockerComposeData(),
+            $choosenServices,
+            $contents
+        );
+    }
+
+    /**
+     * Return the path repository instance.
+     *
+     * @return Repository
+     */
+    protected function paths(): Repository
+    {
+        return resolve(Repository::class);
     }
 }
