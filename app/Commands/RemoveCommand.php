@@ -2,7 +2,8 @@
 
 namespace App\Commands;
 
-use LaravelZero\Framework\Commands\Command;
+use App\Support\Artifacts\DockerFolder;
+use App\Support\Artifacts\DockerComposeFile;
 
 class RemoveCommand extends Command
 {
@@ -22,12 +23,47 @@ class RemoveCommand extends Command
     protected $description = 'Remove a service from the docker-compose.yml and the project';
 
     /**
-     * Execute the console command.
+     * Execute the command process.
      *
-     * @return mixed
+     * @return bool
+     *
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
-    public function handle()
+    protected function fire(): bool
     {
-        //
+        // Get the Serice the user required.
+        $service = $this->argument('service');
+
+        // Remove from Docker folder.
+        DockerFolder::load()->remove($service);
+
+        // Remove from docker-compose.yml.
+        DockerComposeFile::load()->removeService($service, true)
+                                 ->persist();
+
+        $this->info('Service has been removed from .docker foler and docker-compose.yml file!');
+
+        return true;
+    }
+
+    /**
+     * Perform any validation before the command is run.
+     *
+     * @return Command
+     *
+     * @throws \InvalidArgumentException|\Illuminate\Contracts\Filesystem\FileNotFoundException
+     */
+    protected function validate(): Command
+    {
+        // Get the Serice the user required.
+        $service = $this->argument('service');
+
+        // Check if Service exists in .docker folder.
+        $this->serviceExistsInDockerFolder($service);
+
+        // Check if Service exist in docker-compose.yml file.
+        $this->serviceExistsInDockerComposeFile($service);
+
+        return $this;
     }
 }

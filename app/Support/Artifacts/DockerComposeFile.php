@@ -129,33 +129,46 @@ class DockerComposeFile
     }
 
     /**
-     * Change the build context for a Service if needed.
+     * Remove a volume according to the service.
      *
-     * @param array  $serviceData
-     * @param string $contentFolder
+     * @param string $service
      *
-     * @return array
+     * @return DockerComposeFile
      */
-    protected function changeContext(array $serviceData, string $contentFolder = './.docker/'): array
+    public function removeVolume(string $service): DockerComposeFile
     {
-        // Change current build folder to .docker/ folder.
-        if (isset($serviceData['build']['context']) && !is_array($serviceData['build']['context'])) {
-            $serviceData['build']['context'] = $contentFolder . ltrim($serviceData['build']['context'], './');
+        // Checks if the docker-compose.yml file has this service
+        // volume.
+        if (array_key_exists($service, $this->contents['volumes'])) {
+            $this->cleanVolumes($service);
         }
 
-        // Change current build folder to .docker/ folder.
-        if (isset($serviceData['build']) && !is_array($serviceData['build'])) {
-            $serviceData['build'] = $contentFolder . ltrim($serviceData['build'], './');
+        return $this;
+    }
+
+    /**
+     * Remove a service.
+     *
+     * @param string $service
+     * @param bool   $withVolume
+     *
+     * @return DockerComposeFile
+     */
+    public function removeService(string $service, $withVolume = false): DockerComposeFile
+    {
+        // Checks if we need to remove a volume before removing
+        // the service.
+        if ($withVolume) {
+            $this->removeVolume($service);
         }
 
-        // Change volumes folder to .docker/ folder.
-        if (isset($serviceData['volumes']) && is_array($serviceData['volumes'])) {
-            foreach ($serviceData['volumes'] as $key => $volume) {
-                $serviceData['volumes'][$key] = str_replace('./', './.docker/', $serviceData['volumes'][$key]);
-            }
+        // Checks if the docker-compose.yml file has this service
+        // and then if so remove the service.
+        if (array_key_exists($service, $this->repositoryData['services'])) {
+            $this->cleanServices($service);
         }
 
-        return $serviceData;
+        return $this;
     }
 
     /**
@@ -179,6 +192,18 @@ class DockerComposeFile
             $this->paths()->dockerComposePath,
             $this->render()
         );
+    }
+
+    /**
+     * Checks if the Service exists in the docker-compose.yml file.
+     *
+     * @param string $service
+     *
+     * @return bool
+     */
+    public function exists(string $service): bool
+    {
+        return array_key_exists($service, $this->contents['services']);
     }
 
     /**
@@ -219,6 +244,36 @@ class DockerComposeFile
     }
 
     /**
+     * Change the build context for a Service if needed.
+     *
+     * @param array  $serviceData
+     * @param string $contentFolder
+     *
+     * @return array
+     */
+    protected function changeContext(array $serviceData, string $contentFolder = './.docker/'): array
+    {
+        // Change current build folder to .docker/ folder.
+        if (isset($serviceData['build']['context']) && !is_array($serviceData['build']['context'])) {
+            $serviceData['build']['context'] = $contentFolder . ltrim($serviceData['build']['context'], './');
+        }
+
+        // Change current build folder to .docker/ folder.
+        if (isset($serviceData['build']) && !is_array($serviceData['build'])) {
+            $serviceData['build'] = $contentFolder . ltrim($serviceData['build'], './');
+        }
+
+        // Change volumes folder to .docker/ folder.
+        if (isset($serviceData['volumes']) && is_array($serviceData['volumes'])) {
+            foreach ($serviceData['volumes'] as $key => $volume) {
+                $serviceData['volumes'][$key] = str_replace('./', './.docker/', $serviceData['volumes'][$key]);
+            }
+        }
+
+        return $serviceData;
+    }
+
+    /**
      * Return the path repository instance.
      *
      * @return Repository
@@ -226,5 +281,33 @@ class DockerComposeFile
     protected function paths(): Repository
     {
         return resolve(Repository::class);
+    }
+
+    /**
+     * Remove volume from the docker-compose.yml file.
+     *
+     * @param string $service
+     */
+    protected function cleanVolumes(string $service)
+    {
+        unset($this->contents['volumes'][$service]);
+
+        if (empty($this->contents['volumes'])) {
+            unset($this->contents['volumes']);
+        }
+    }
+
+    /**
+     * Remove services from docker-compose.yml file.
+     *
+     * @param string $service
+     */
+    protected function cleanServices(string $service)
+    {
+        unset($this->contents['services'][$service]);
+
+        if (empty($this->contents['services'])) {
+            unset($this->contents['services']);
+        }
     }
 }

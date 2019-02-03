@@ -83,7 +83,12 @@ class DockerFolder
         $services = (array)$services;
 
         $this->items = $this->items->reject(function ($item) use ($services) {
-            return in_array($item, $services);
+            // Service can be removed.
+            if (in_array($item, $services) && $this->hasServiceFolder($item)) {
+                return $this->deleteServiceFolder($item);
+            }
+
+            return false;
         })->values();
 
         return $this;
@@ -139,6 +144,18 @@ class DockerFolder
         );
 
         return $this;
+    }
+
+    /**
+     * Remove Service folder from docker folder.
+     *
+     * @param string $service
+     *
+     * @return bool
+     */
+    public function deleteServiceFolder(string $service): bool
+    {
+        return Storage::disk('docker')->deleteDirectory($service);
     }
 
     /**

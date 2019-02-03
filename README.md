@@ -15,11 +15,13 @@ Fast scaffolding for a laradock project.
     - [x] Allow User to require an additional service.
     - [x] Add Choosen service to the docker-compose.yml.
     - [x] Add service folder to the .docker folder. 
-- [ ] Remove Command.
-    - [ ] Allow User to remove service.
-    - [ ] Remove the service from the docker-compose.yml
-    - [ ] Remove the service folder.
+- [x] Remove Command.
+    - [x] Allow User to remove service.
+    - [x] Remove the service from the docker-compose.yml
+    - [x] Remove the service folder.
  - [ ] Set docker env Command.
     - [ ] User enters an Env
     - [ ] User enters a Value
     - [ ] Command updates that value
+ - [ ] Refactoring and Clean up.
+ - [ ] Documentation
