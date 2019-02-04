@@ -2,8 +2,7 @@
 
 namespace App\Commands;
 
-use App\Support\Artifacts\DockerFolder;
-use App\Support\Artifacts\DockerComposeFile;
+use App\Support\Artifacts;
 
 class RemoveCommand extends Command
 {
@@ -23,6 +22,14 @@ class RemoveCommand extends Command
     protected $description = 'Remove a service from the docker-compose.yml and the project';
 
     /**
+     * Success message to show when
+     * command is successful.
+     *
+     * @var string
+     */
+    protected $successMessage = 'Service has been removed from .docker foler and docker-compose.yml file!';
+
+    /**
      * Execute the command process.
      *
      * @return bool
@@ -31,19 +38,39 @@ class RemoveCommand extends Command
      */
     protected function fire(): bool
     {
-        // Get the Serice the user required.
-        $service = $this->argument('service');
-
-        // Remove from Docker folder.
-        DockerFolder::load()->remove($service);
-
-        // Remove from docker-compose.yml.
-        DockerComposeFile::load()->removeService($service, true)
-                                 ->persist();
-
-        $this->info('Service has been removed from .docker foler and docker-compose.yml file!');
+        $this->removeFromDockerFolder()
+             ->removeFromDockerComposeFile();
 
         return true;
+    }
+
+    /**
+     * Remove the service from the Docker folder.
+     *
+     * @return RemoveCommand
+     */
+    protected function removeFromDockerFolder(): RemoveCommand
+    {
+        Artifacts\DockerFolder::load()
+                              ->remove($this->argument('service'));
+
+        return $this;
+    }
+
+    /**
+     * Remove the servie from the docker-compose.yml file.
+     *
+     * @return RemoveCommand
+     *
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     */
+    protected function removeFromDockerComposeFile(): RemoveCommand
+    {
+        Artifacts\DockerComposeFile::load()
+                                   ->removeService($this->argument('service'), true)
+                                   ->persist();
+
+        return $this;
     }
 
     /**

@@ -98,6 +98,8 @@ class DockerFolder
      * Persist all the services.
      *
      * @return bool
+     *
+     * @throws \InvalidArgumentException
      */
     public function persist(): bool
     {
@@ -105,6 +107,12 @@ class DockerFolder
 
         foreach ($this->items as $service) {
             $allWasPersisted = $this->persistService($service);
+        }
+
+        // If not all services were saved
+        // then show an error.
+        if (!$allWasPersisted) {
+            throw new \InvalidArgumentException('Unable to save all services in the .docker folder!');
         }
 
         return $allWasPersisted;

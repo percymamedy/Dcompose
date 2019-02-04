@@ -21,7 +21,8 @@
         "guzzlehttp/guzzle": "~6.0",
         "laravel-zero/framework": "5.7.*",
         "symfony/finder": "^4.2",
-        "symfony/yaml": "^4.2"
+        "symfony/yaml": "^4.2",
+        "zendframework/zend-text": "^2.7"
     },
     "require-dev": {
         "kint-php/kint": "^3.1",

@@ -23,5 +23,6 @@ Fast scaffolding for a laradock project.
     - [ ] User enters an Env
     - [ ] User enters a Value
     - [ ] Command updates that value
- - [ ] Refactoring and Clean up.
+ - [ ] Generate Command line helpers
+ - [x] Refactoring and Clean up.
  - [ ] Documentation

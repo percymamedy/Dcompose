@@ -2,11 +2,6 @@
 
 namespace App\Commands;
 
-use App\Satchel;
-use App\Compose;
-use App\Laradock;
-use LaravelZero\Framework\Commands\Command;
-
 class InitCommand extends Command
 {
     /**
@@ -24,27 +19,6 @@ class InitCommand extends Command
     protected $description = 'Initialises docker-compose.yml and Dockerfile inside their respective directories';
 
     /**
-     * Satchel instance.
-     *
-     * @var Satchel
-     */
-    protected $satchel;
-
-    /**
-     * Laradock instance.
-     *
-     * @var Laradock
-     */
-    protected $laradock;
-
-    /**
-     * The Compose instance.
-     *
-     * @var Compose
-     */
-    protected $compose;
-
-    /**
      * Choosen services for initialization.
      *
      * @var array
@@ -52,69 +26,54 @@ class InitCommand extends Command
     protected $choosenServices = [];
 
     /**
-     * InitCommand constructor.
+     * Success message to show when
+     * command is successful.
      *
-     * @param Satchel  $satchel
-     * @param Laradock $laradock
-     * @param Compose  $compose
+     * @var string
      */
-    public function __construct(Satchel $satchel, Laradock $laradock, Compose $compose)
+    protected $successMessage = 'Docker environment created run "docker-compose up -d" within the ".docker" directory!';
+
+    /**
+     * Project name.
+     *
+     * @var string
+     */
+    protected $projectName;
+
+    /**
+     * Execute the command process.
+     *
+     * @return bool
+     */
+    protected function fire(): bool
     {
-        parent::__construct();
-        $this->satchel = $satchel;
-        $this->laradock = $laradock;
-        $this->compose = $compose;
+        $this->askForProjectName()
+             ->askForServices()
+             ->createDockerComposeFile()
+             ->createDockerFolder()
+             ->addServicesToThem();
+
+        return true;
     }
 
     /**
-     * Execute the console command.
+     * Ask User for a Project name.
      *
-     * @return mixed|void
+     * @return InitCommand
      */
-    public function handle()
+    protected function askForProjectName(): InitCommand
     {
-        // First check if we have Laradock in our
-        // satchel and if not we fetch it from
-        // GitHub.
-        if ($this->satchel->doesNotContainLaradock()) {
-            $this->info('Fetching laradock from dist...');
-            $this->laradock->grabAndPutInSatchel();
-        }
+        $this->projectName = $this->ask('Enter a name for your project');
 
-        // Ask User for a Project name.
-        $projectName = $this->ask('Enter a name for your project');
-
-        // Ask User to select services.
-        $this->askForServices();
-
-        // Cancel action if the User does not want to continue with erasing the docker-compose.yml file.
-        if ($this->compose->hasDockerComposeFile() && !$this->confirm('The docker-compose.yml file exist, do you wish to continue?')) {
-            $this->info('Operation aborted!');
-            return;
-        }
-
-        // Build docker-compose.yml file.
-        if (!$this->compose->newUpDockerComposeFile($this->choosenServices)) {
-            $this->error('Unable to create docker-compose.yml file!');
-            return;
-        }
-
-        // Create .docker folder.
-        $this->compose->touchDockerFolder($projectName);
-
-        // Add directories.
-        $this->compose->addServices($this->choosenServices);
-
-        // Success message.
-        $this->info('Docker environment created run "docker-compose up -d" within the ".docker" directory.');
+        return $this;
     }
 
     /**
      * Ask User for services.
      *
-     * @return void
+     * @return InitCommand
      */
-    protected function askForServices()
+    protected function askForServices(): InitCommand
     {
         // Get available services.
         $availableServices = $this->laradock->availableServices();
@@ -137,5 +96,66 @@ class InitCommand extends Command
             // Show error.
             $this->error('The service "' . $service . '" is not a valid laradock service. Enter another service');
         }
+
+        return $this;
+    }
+
+    /**
+     * Build docker-compose.yml file.
+     *
+     * @return InitCommand
+     *
+     * @throws \InvalidArgumentException
+     */
+    protected function createDockerComposeFile(): InitCommand
+    {
+        if (!$this->compose->newUpDockerComposeFile($this->choosenServices)) {
+            throw new \InvalidArgumentException('Unable to create docker-compose.yml file!');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Add choosen services to docker-compose.yml file and
+     * to the .docker folder.
+     *
+     * @return InitCommand
+     */
+    protected function addServicesToThem(): InitCommand
+    {
+        $this->compose->addServices($this->choosenServices);
+
+        return $this;
+    }
+
+    /**
+     * Create the .docker folder.
+     *
+     * @return InitCommand
+     */
+    protected function createDockerFolder(): InitCommand
+    {
+        $this->compose->touchDockerFolder($this->projectName);
+
+        return $this;
+    }
+
+    /**
+     * Perform any validation before the command is run.
+     *
+     * @return Command
+     *
+     * @throws \InvalidArgumentException
+     */
+    protected function validate(): Command
+    {
+        // Cancel action if the User does not want to continue
+        // with erasing the docker-compose.yml file.
+        if ($this->compose->hasDockerComposeFile() && !$this->confirm('The docker-compose.yml file exist, do you wish to continue?')) {
+            throw new \InvalidArgumentException('Operation aborted!');
+        }
+
+        return $this;
     }
 }
