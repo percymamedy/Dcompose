@@ -31,8 +31,6 @@ class EnvFile
     {
         $this->originalData = $envData;
         $this->data = $envData;
-
-        $this->updateEnvData('COMPOSE_FILE', '../docker-compose.yml');
     }
 
     /**

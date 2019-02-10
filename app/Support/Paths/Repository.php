@@ -37,9 +37,9 @@ class Repository
      */
     public function __construct()
     {
-        $this->dockerComposePath = 'docker-compose.yml';
         $this->dockerFolderPath = '.docker';
-        $this->dockerEnvPath = '.docker' . DIRECTORY_SEPARATOR . '.env';
-        $this->dockerEnvExamplePath = '.docker' . DIRECTORY_SEPARATOR . 'env-example';
+        $this->dockerComposePath = $this->dockerFolderPath . DIRECTORY_SEPARATOR . 'docker-compose.yml';
+        $this->dockerEnvPath = $this->dockerFolderPath . DIRECTORY_SEPARATOR . '.env';
+        $this->dockerEnvExamplePath = $this->dockerFolderPath . DIRECTORY_SEPARATOR . 'env-example';
     }
 }
