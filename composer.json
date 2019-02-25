@@ -50,6 +50,11 @@
             "@php application app:rename"
         ]
     },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.2.x-dev"
+        }
+    },
     "minimum-stability": "dev",
     "prefer-stable": true,
     "bin": ["dcompose"]
