@@ -134,6 +134,12 @@ class Laradock
         if ($resource === true) {
             // Extract the archive.
             $zip->extractTo(home_dir() . DIRECTORY_SEPARATOR . 'laradock');
+
+            // Delete data directory before if it exists.
+            if ($this->satchel->exists('laradock/data')) {
+                $this->satchel->deleteDirectory('laradock/data');
+            }
+
             // Rename extracted folder so we may access it later.
             $this->satchel->move(
                 array_first($this->satchel->directories('laradock')),

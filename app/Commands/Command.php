@@ -165,15 +165,24 @@ abstract class Command extends BaseCommand
      */
     protected function fetchLaradockIfNecessary(): Command
     {
-        // First check if we have Laradock in our
-        // satchel and if not we fetch it from
-        // GitHub.
-        if ($this->satchel->doesNotContainLaradock()) {
+        // Check if we should fetch laradock from
+        // dist and if so we do it.
+        if ($this->shouldFetchLaradock()) {
             $this->info('Fetching laradock from dist...');
             $this->laradock->grabAndPutInSatchel();
         }
 
         return $this;
+    }
+
+    /**
+     * Check if we should refetch laradock or not.
+     *
+     * @return bool
+     */
+    protected function shouldFetchLaradock(): bool
+    {
+        return $this->satchel->doesNotContainLaradock();
     }
 
     /**

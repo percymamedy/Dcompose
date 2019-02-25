@@ -81,6 +81,14 @@ Now you may run the following command inside the ```.docker/``` folder :
 $ docker-compose up -d
 ```
 
+or :
+
+```bash
+$ ./containers start
+```
+
+If you've ran the ```generate-tools``` command.
+
 #### Remove command
 You can remove a service using the following command :
 
@@ -106,32 +114,50 @@ $ docker rmi <image_name>
 $ docker volume rm <volume_name>
 ```
 
-### TODOS
+#### Generate tools command
+Generating the commands line tools helps in running and executing docker containers from
+laradock :
 
-- [x] Init Command.
-    - [x] Allow User to choose a name for the project.
-    - [x] Allow User to choose services.
-    - [x] Create docker-compose.yml and add services to it.
-    - [x] Create .env and env-example files.
-    - [x] Update .env parameters according to Project name.
-    - [x] Create .docker folder and add services folders to it.
-- [x] Require Command.
-    - [x] Allow User to require an additional service.
-    - [x] Add Choosen service to the docker-compose.yml.
-    - [x] Add service folder to the .docker folder. 
-- [x] Remove Command.
-    - [x] Allow User to remove service.
-    - [x] Remove the service from the docker-compose.yml
-    - [x] Remove the service folder.
- - [ ] Update Command.
-    - [ ] Allow user to update laradock files from cache.
- - [ ] Set docker env Command.
-    - [ ] User enters an Env
-    - [ ] User enters a Value
-    - [ ] Command updates that value
- - [x] Generate Command line helpers
- - [x] Refactoring and Clean up.
- - [ ] Documentation
+```bash
+$ dcompose generate-tools
+```
+
+A new ```containers``` script will be created which gives you access to three options:
+
+Start docker containers:
+```bash
+$ ./containers start
+```
+
+Stop docker containers:
+```bash
+$ ./containers stop
+```
+
+Ssh into workspace container after starting contaners :
+```bash
+$ ./containers workspace
+```
+
+#### Refresh command
+laradock files are fetched and cached such that ```require```, ```remove``` and ```init``` command 
+are carried out faster without the need to refetch files from dist all the time.
+
+However, there is not way of knowing when laradock has been updated, thus the ```refresh``` command
+allows us to refresh the cached laradock files :
+
+```bash
+$ dcompose refresh
+```
+ 
+### Road map v0.2
+- [ ] Make code more consistent with an object oriented approach.
+- [ ] Use something like doctrine cache for managing laradock file hence eliminating the need 
+for refresh command by having expiration.
+
+### Road map v0.3
+- [ ] Add a manifest file in JSON or YML that will contain all docker containers hence eliminating the
+need for commiting the .docker folder.
 
 ### Credits
 Big Thanks to all developers who worked hard to create something amazing!
