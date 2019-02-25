@@ -2,6 +2,13 @@
    Dcompose
 </h2>
 
+<p align="center">
+    <a href="https://packagist.org/packages/percymamedy/dcompose"><img src="https://poser.pugx.org/percymamedy/dcompose/v/stable" alt="Latest Stable Version"></a>
+    <a href="https://packagist.org/packages/percymamedy/dcompose"><img src="https://poser.pugx.org/percymamedy/dcompose/v/unstable" alt="Latest Unstable Version"></a>
+    <a href="https://packagist.org/packages/percymamedy/dcompose"><img src="https://poser.pugx.org/percymamedy/dcompose/license" alt="License"></a>
+    <a href="https://packagist.org/packages/percymamedy/dcompose"><img src="https://poser.pugx.org/percymamedy/dcompose/downloads" alt="Total Downloads"></a>
+</p>
+
 ## Introduction
 [Laradock](https://laradock.io/) is an awesome tool that helps with building a [Docker](https://www.docker.com/) environment for running 
 your Laravel or PHP apps.
