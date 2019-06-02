@@ -2,12 +2,14 @@
 
 namespace App\Commands;
 
-use Illuminate\Filesystem\Filesystem;
-use Illuminate\Support\Facades\Storage;
+use App\Support\Artifacts\Containers;
 use LaravelZero\Framework\Commands\Command;
+use App\Support\Concerns\CommandResponsable;
 
 class GenerateCommandLineTools extends Command
 {
+    use CommandResponsable;
+
     /**
      * The signature of the command.
      *
@@ -29,26 +31,8 @@ class GenerateCommandLineTools extends Command
      */
     public function handle()
     {
-        // Copy file to Working directory.
-        Storage::disk('work_dir')->put('containers', $this->getContainersFileContents());
-
-        // Make file executed.
-        app(Filesystem::class)->chmod(
-            Storage::disk('work_dir')->path('containers'), 0755
-        );
-
-        $this->info('containers script generated!');
-
-        return true;
-    }
-
-    /**
-     * Get the command line tools content.
-     *
-     * @return string
-     */
-    protected function getContainersFileContents(): string
-    {
-        return file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . 'stubs' . DIRECTORY_SEPARATOR . 'containers.stub');
+        return Containers::make()->save() ?
+            $this->sendSuccessResponse('containers script generated!') :
+            $this->sendErrorResponse('Could generate containers script!');
     }
 }
