@@ -1,0 +1,1 @@
+FROM baz:latest

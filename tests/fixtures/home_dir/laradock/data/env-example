@@ -1,0 +1,52 @@
+###########################################################
+###################### General Setup ######################
+###########################################################
+
+### Paths #################################################
+
+# Point to the path of your applications code on your host
+APP_CODE_PATH_HOST=../
+
+# Point to where the `APP_CODE_PATH_HOST` should be in the container
+APP_CODE_PATH_CONTAINER=/var/www
+
+# You may add flags to the path `:cached`, `:delegated`. When using Docker Sync add `:nocopy`
+APP_CODE_CONTAINER_FLAG=:cached
+
+# Choose storage path on your machine. For all storage systems
+DATA_PATH_HOST=~/.laradock/data
+
+### Drivers ################################################
+
+# All volumes driver
+VOLUMES_DRIVER=local
+
+# All Networks driver
+NETWORKS_DRIVER=bridge
+
+### Docker compose files ##################################
+
+# Select which docker-compose files to include. If using docker-sync append `:docker-compose.sync.yml` at the end
+COMPOSE_FILE=docker-compose.yml
+
+# Change the separator from : to ; on Windows
+COMPOSE_PATH_SEPARATOR=:
+
+# Define the prefix of container names. This is useful if you have multiple projects that use laradock to have seperate containers per project.
+COMPOSE_PROJECT_NAME=laradock
+
+###########################################################
+################ Containers Customization #################
+###########################################################
+
+FOO_ARGS1=FOO_VAL1
+FOO_ARGS2=FOO_VAL2
+FOO_ARGS3=FOO_VAL3
+
+BAR_ARGS1=BAR_VAL1
+BAR_ARGS2=BAR_VAL2
+BAR_ARGS3=BAR_VAL3
+
+BAZ_ARGS1=BAZ_VAL1
+BAZ_ARGS2=BAZ_VAL2
+BAZ_ARGS3=BAZ_VAL3

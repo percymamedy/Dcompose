@@ -8,6 +8,11 @@ if (!function_exists('home_dir')) {
      */
     function home_dir()
     {
+        // We are in testing environment.
+        if (getenv('APP_ENV') === 'testing') {
+            return realpath(__DIR__ . '/../../tests/fixtures/home_dir');
+        }
+
         // Cannot use $_SERVER superglobal since that's empty during UnitUnishTestCase
         // getenv('HOME') isn't set on Windows and generates a Notice.
         $home = getenv('HOME');
@@ -24,6 +29,33 @@ if (!function_exists('home_dir')) {
         }
 
         return empty($home) ? null : $home . DIRECTORY_SEPARATOR . '.dcompose';
+    }
+}
+
+if (!function_exists('work_dir')) {
+    /**
+     * Return the project directory.
+     *
+     * @return string
+     */
+    function work_dir()
+    {
+        return getenv('APP_ENV') === 'testing' ?
+            realpath(__DIR__ . '/../../tests/fixtures/work_dir') :
+            getcwd();
+    }
+}
+
+if (!function_exists('docker_dir')) {
+    /**
+     * Return the directory in which all
+     * docker assets will be saved.
+     *
+     * @return string
+     */
+    function docker_dir()
+    {
+        return work_dir() . DIRECTORY_SEPARATOR . '.docker';
     }
 }
 

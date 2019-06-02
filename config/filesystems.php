@@ -36,12 +36,12 @@ return [
 
         'work_dir' => [
             'driver' => 'local',
-            'root'   => getcwd(),
+            'root'   => work_dir(),
         ],
 
         'docker' => [
             'driver' => 'local',
-            'root'   => getcwd() . DIRECTORY_SEPARATOR . '.docker',
+            'root'   => docker_dir(),
         ],
     ],
 ];

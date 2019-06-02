@@ -1,0 +1,70 @@
+version: '3'
+
+networks:
+  frontend:
+    driver: ${NETWORKS_DRIVER}
+  backend:
+    driver: ${NETWORKS_DRIVER}
+
+volumes:
+  foo:
+    driver: ${VOLUMES_DRIVER}
+  bar:
+    driver: ${VOLUMES_DRIVER}
+  baz:
+    driver: ${VOLUMES_DRIVER}
+
+services:
+
+### Foo Service Utilities ##################################
+    foo:
+      build:
+        context: ./foo
+        args:
+          - FOO_ARGS1=${FOO_ARGS1}
+          - FOO_ARGS2=${FOO_ARGS2}
+          - FOO_ARGS3=${FOO_ARGS3}
+      networks:
+        - frontend
+        - backend
+      links:
+        - docker-in-docker
+
+### Bar Service Utilities ##################################
+    bar:
+      build:
+        context: ./bar
+        args:
+          - BAR_ARGS1=${BAR_ARGS1}
+          - BAR_ARGS2=${BAR_ARGS2}
+          - BAR_ARGS3=${BAR_ARGS3}
+      networks:
+        - frontend
+        - backend
+      links:
+        - docker-in-docker
+
+### Baz Service Utilities ##################################
+    baz:
+      build:
+        context: ./baz
+        args:
+          - BAZ_ARGS1=${BAZ_ARGS1}
+          - BAZ_ARGS2=${BAZ_ARGS2}
+          - BAZ_ARGS3=${BAZ_ARGS3}
+      networks:
+        - frontend
+        - backend
+      links:
+        - docker-in-docker
+
+### Docker-in-Docker ################################################
+    docker-in-docker:
+      image: docker:dind
+      privileged: true
+      volumes:
+        - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}
+      expose:
+        - 2375
+      networks:
+        - backend
