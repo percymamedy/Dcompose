@@ -5,6 +5,7 @@
 <p align="center">
     <a href="https://packagist.org/packages/percymamedy/dcompose"><img src="https://poser.pugx.org/percymamedy/dcompose/v/stable" alt="Latest Stable Version"></a>
     <a href="https://packagist.org/packages/percymamedy/dcompose"><img src="https://poser.pugx.org/percymamedy/dcompose/v/unstable" alt="Latest Unstable Version"></a>
+    <a href="https://travis-ci.org/percymamedy/Dcompose"><img src="https://travis-ci.org/percymamedy/Dcompose.svg?branch=develop" alt="Build Status"></a>
     <a href="https://packagist.org/packages/percymamedy/dcompose"><img src="https://poser.pugx.org/percymamedy/dcompose/license" alt="License"></a>
     <a href="https://packagist.org/packages/percymamedy/dcompose"><img src="https://poser.pugx.org/percymamedy/dcompose/downloads" alt="Total Downloads"></a>
 </p>
