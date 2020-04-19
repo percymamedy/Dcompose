@@ -5,34 +5,30 @@ namespace App\Support\Concerns;
 trait CommandResponsable
 {
     /**
-     * Show a sucess message and the exit the program.
+     * Show a success message and the exit the program.
      *
-     * @param string $message
+     * @param  string  $message
      *
-     * @return bool
+     * @return void
      */
-    protected function sendSuccessResponse(string $message = null): bool
+    protected function sendSuccessResponse(string $message = null): void
     {
         $message = $message ?? 'Command successfully ran!';
 
         $this->info($message);
-
-        return true;
     }
 
     /**
      * Show an error message and then exits the program.
      *
-     * @param string $message
+     * @param  string  $message
      *
-     * @return bool
+     * @return void
      */
-    protected function sendErrorResponse(string $message = null): bool
+    protected function sendErrorResponse(string $message = null): void
     {
         $message = $message ?? 'Command failed !';
 
         $this->error($message);
-
-        return false;
     }
 }

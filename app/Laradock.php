@@ -4,6 +4,7 @@ namespace App;
 
 use ZipArchive;
 use GuzzleHttp\Client;
+use Illuminate\Support\Arr;
 use Symfony\Component\Yaml\Yaml;
 use Illuminate\Support\Collection;
 use App\Support\Artifacts\EnvFile;
@@ -34,9 +35,9 @@ class Laradock
     /**
      * Laradock constructor.
      *
-     * @param Client  $gitHubClient
-     * @param string  $laradockZip
-     * @param Satchel $satchel
+     * @param  Client   $gitHubClient
+     * @param  string   $laradockZip
+     * @param  Satchel  $satchel
      */
     public function __construct(Client $gitHubClient, string $laradockZip, Satchel $satchel)
     {
@@ -68,7 +69,7 @@ class Laradock
     /**
      * Checks if service is avalable in laradock.
      *
-     * @param string $service
+     * @param  string  $service
      *
      * @return bool
      */
@@ -108,7 +109,7 @@ class Laradock
     /**
      * Get the full path of the service.
      *
-     * @param string $service
+     * @param  string  $service
      *
      * @return string
      */
@@ -142,7 +143,7 @@ class Laradock
 
             // Rename extracted folder so we may access it later.
             $this->satchel->move(
-                array_first($this->satchel->directories('laradock')),
+                Arr::first($this->satchel->directories('laradock')),
                 'laradock/data'
             );
             return $this;
