@@ -5,6 +5,7 @@ namespace App\Commands;
 use App\Compose;
 use App\Satchel;
 use App\Laradock;
+use App\Support\Concerns\CommandResponsable;
 use Illuminate\Support\Facades\Storage;
 use App\Support\Artifacts\DockerComposeFile;
 use Symfony\Component\Console\Input\InputInterface;
@@ -14,6 +15,8 @@ use Illuminate\Contracts\Filesystem\FileNotFoundException;
 
 abstract class Command extends BaseCommand
 {
+    use CommandResponsable;
+
     /**
      * Laradock instance.
      *
@@ -54,9 +57,9 @@ abstract class Command extends BaseCommand
     /**
      * Command constructor.
      *
-     * @param Laradock $laradock
-     * @param Satchel  $satchel
-     * @param Compose  $compose
+     * @param  Laradock  $laradock
+     * @param  Satchel   $satchel
+     * @param  Compose   $compose
      */
     public function __construct(Laradock $laradock, Satchel $satchel, Compose $compose)
     {
@@ -71,8 +74,8 @@ abstract class Command extends BaseCommand
      * Initializes the command after the input has been bound and before the input
      * is validated.
      *
-     * @param InputInterface  $input
-     * @param OutputInterface $output
+     * @param  InputInterface   $input
+     * @param  OutputInterface  $output
      *
      * @return void
      */
@@ -91,52 +94,17 @@ abstract class Command extends BaseCommand
     /**
      * Execute the console command.
      *
-     * @return bool
+     * @return void
      */
     public function handle()
     {
         try {
-            // Run the Command and if it's success full
-            // call the success method.
-            if ($this->fire()) {
-                return $this->sendSuccessResponse();
-            }
-
-            return $this->sendErrorResponse();
+            $this->fire() ?
+                $this->sendSuccessResponse($this->successMessage) :
+                $this->sendErrorResponse($this->errorMessage);
         } catch (\Exception $e) {
             $this->sendFailedResponse($e);
-            return false;
         }
-    }
-
-    /**
-     * Show a sucess message and the exit the
-     * program.
-     *
-     * @return bool
-     */
-    protected function sendSuccessResponse(): bool
-    {
-        $message = $this->successMessage ?? 'Command successfully ran!';
-
-        $this->info($message);
-
-        return true;
-    }
-
-    /**
-     * Show an error message and then exits the
-     * program.
-     *
-     * @return bool
-     */
-    protected function sendErrorResponse(): bool
-    {
-        $message = $this->errorMessage ?? 'Command failed !';
-
-        $this->error($message);
-
-        return false;
     }
 
     /**
@@ -188,7 +156,7 @@ abstract class Command extends BaseCommand
     /**
      * Validate that the service is available in Laradock folder.
      *
-     * @param string $service
+     * @param  string  $service
      *
      * @throws \InvalidArgumentException
      */
@@ -203,7 +171,7 @@ abstract class Command extends BaseCommand
     /**
      * Validate that the service is available in Docker folder.
      *
-     * @param string $service
+     * @param  string  $service
      *
      * @throws \InvalidArgumentException
      */
@@ -218,7 +186,7 @@ abstract class Command extends BaseCommand
     /**
      * Validate that the service is not available in Docker folder.
      *
-     * @param string $service
+     * @param  string  $service
      *
      * @throws \InvalidArgumentException
      */
@@ -233,7 +201,7 @@ abstract class Command extends BaseCommand
     /**
      * Validate that the service is available in docker-compose.yml file.
      *
-     * @param string $service
+     * @param  string  $service
      *
      * @throws \InvalidArgumentException|FileNotFoundException
      */
@@ -248,7 +216,7 @@ abstract class Command extends BaseCommand
     /**
      * Output an error message.
      *
-     * @param \Exception $e
+     * @param  \Exception  $e
      *
      * @return void
      */

@@ -7,7 +7,7 @@ abstract class AbstractArtifact implements Artifact
     /**
      * Create a new instance of the Artifact.
      *
-     * @param array $args
+     * @param  array  $args
      *
      * @return Artifact
      */

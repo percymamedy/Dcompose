@@ -27,11 +27,11 @@ class GenerateCommandLineTools extends Command
     /**
      * Execute the console command.
      *
-     * @return mixed
+     * @return void
      */
     public function handle()
     {
-        return Containers::make()->save() ?
+        Containers::make()->save() ?
             $this->sendSuccessResponse('containers script generated!') :
             $this->sendErrorResponse('Could generate containers script!');
     }
